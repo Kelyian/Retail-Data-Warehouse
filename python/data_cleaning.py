@@ -1,11 +1,20 @@
 import pandas as pd
 
+#Loadint the datasets
+orders = pd.read_csv("data/raw/olist_orders_dataset.csv")
+customers = pd.read_csv("data/raw/olist_customers_dataset.csv")
+order_items = pd.read_csv("data/raw/olist_order_items_dataset.csv")
+products = pd.read_csv("data/raw/olist_products_dataset.csv")
+sellers = pd.read_csv("data/raw/olist_sellers_dataset.csv")
+payments = pd.read_csv("data/raw/olist_order_payments_dataset.csv")
+reviews = pd.read_csv("data/raw/olist_order_reviews_dataset.csv")
+geolocation = pd.read_csv("data/raw/olist_geolocation_dataset.csv")
+
 """
 order dataset
 
 """
 
-orders = pd.read_csv("data/raw/olist_orders_dataset.csv")
 
 print(orders.head())
 print(orders.dtypes)
@@ -123,7 +132,7 @@ Customers Dataset
 
 """
 
-customers = pd.read_csv("data/raw/olist_customers_dataset.csv")
+
 
 #cleaning - 0 missing values and duplicate rows
 #understanding the ID relationship 
@@ -215,4 +224,59 @@ print("\nUnique customer_ids :",customers["customer_id"].nunique())
 print("\nUnique Customers:",customers["customer_unique_id"].nunique())
 
 #saving the processed data
-customers.to_csv("data/processed/customers_cleaned_csv",index = False)
+customers.to_csv("data/processed/customers_cleaned.csv",index = False)
+
+"""
+Order_items dataset 
+- it had:
+    - 112,650 rows
+    - 7 columns
+    - 0 missing values and duplicate rows
+    - 98666 unique orders 
+    - 32951 unique products 
+    - 3095 unique sellers
+    - composite key (order_id + order_item_id)
+
+"""
+
+
+# range of item numbers 
+print("\nMinimum item number :",order_items["order_item_id"].min())
+print("Maximum item number :",order_items["order_item_id"].max())
+
+#checking the prices
+print(order_items[["price","freight_value"]].describe())
+
+#checking for any negative values 
+print("Negatice prices:",(order_items["price"]<0).sum())
+print("Negatice freight value:",(order_items["freight_value"]<0).sum())
+
+#checking most expensive items 
+print(
+    order_items[
+        ["order_id","order_item_id","product_id","seller_id","price","freight_value"]
+    ].sort_values("price",ascending=False)
+    .head(10)
+)
+
+#Total item value = price + freight value 
+order_items["item_total"] = (order_items["price"] + order_items["freight_value"])
+print(order_items[
+    ["price","freight_value","item_total"]
+].head(5))
+
+#understanding the foreign keys -> order_id,product_id,seller_id
+#every order item should belong to an order
+
+missing_orders = ~order_items["order_id"].isin(orders["order_id"])
+print("Order IDs missing from orders:",missing_orders.sum())
+
+
+missing_products = ~order_items["product_id"].isin(products["product_id"])
+print("Product IDs missing from products:",missing_products.sum())
+
+missing_sellers = ~order_items["seller_id"].isin(sellers["seller_id"])
+print("Seller IDs missing from sellers:",missing_sellers.sum())
+
+#saving the processed dataset 
+order_items.to_csv("data/processed/order_items_cleaned.csv",index = False)
