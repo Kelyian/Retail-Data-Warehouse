@@ -280,3 +280,63 @@ print("Seller IDs missing from sellers:",missing_sellers.sum())
 
 #saving the processed dataset 
 order_items.to_csv("data/processed/order_items_cleaned.csv",index = False)
+
+
+"""
+
+products dataset
+
+"""
+#checking and handling missing values - checking whether missing values occur on the same products
+missing_products = products[products.isna().any(axis=1)]
+print(missing_products)
+print("\nProducts with any missing values:",missing_products.shape[0]) #returns number of rows with missing values
+print(
+    "Missing values by product:",
+    products.isna().sum(axis=1).value_counts().sort_index()
+)
+
+#identifying the one product with 8 missing values 
+print(products[products.isna().sum(axis=1) == 8])
+
+#analysing the products with 4 missing values 
+print(products[products.isna().sum(axis=1) == 4 ].head())
+
+#checking whether this products are being sold 
+missing_product_ids = products[
+    products.isna().sum(axis=1) > 0 
+]["product_id"]
+
+print(
+    "Missing-information products appearing in order items:",
+    order_items["product_id"].isin(missing_product_ids).sum() 
+)     # 1604 order_item records reference products that have atleast some missing product information
+
+print(
+    order_items[
+        order_items["product_id"] == "5eb564652db742ff8f28759cd8d2652a"
+    ]
+) # the product is being sold ..it appears on order_items 18 times 
+
+
+#checking which 4 columns are missing among the 610 products 
+print(
+    products[
+        products.isna().sum(axis=1) == 4
+    ].isna().sum()
+)
+
+#filling the categorical field with unknown 
+products["product_category_name"] = (products["product_category_name"].fillna("Unknown"))
+
+#creating a flag for the initial data 
+products["product_info_missing_flag"] = products.isna().any(axis=1)
+print("\n",products.isna().sum())
+print(products["product_info_missing_flag"].value_counts())
+
+print(
+    "Product IDs in order items missing from products:",
+    (~order_items["product_id"].isin(products["product_id"])).sum()
+)
+
+products.to_csv("data/processed/products_cleaned.csv")
