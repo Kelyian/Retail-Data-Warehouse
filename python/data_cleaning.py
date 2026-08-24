@@ -358,3 +358,40 @@ print(
 )
 
 sellers.to_csv("data/processed/sellers_cleaned.csv",index = False)
+
+
+"""
+
+Payments dataset
+
+"""
+
+print(
+    "\nDuplicate (order_id,payment_sequential) combinations:",
+    payments.duplicated(
+        subset= ["order_id","payment_sequential"]
+    ).sum()
+)
+
+#payment summary
+print(payments["payment_value"].describe())
+
+#checking for any negative values
+print(
+    "\nNegative payment values :",
+    (payments["payment_value"] < 0).sum()
+)
+
+print(payments["payment_type"].value_counts())
+print(
+    "Unique payment types:",
+    payments["payment_type"].nunique()
+)
+
+#relationship with orders 
+print(
+    "payment order Ids missing from orders:",
+    (~payments["order_id"].isin(orders["order_id"])).sum()
+)
+
+payments.to_csv("data/processed/payments_cleaned.csv",index= False)
