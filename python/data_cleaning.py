@@ -339,4 +339,22 @@ print(
     (~order_items["product_id"].isin(products["product_id"])).sum()
 )
 
-products.to_csv("data/processed/products_cleaned.csv")
+products.to_csv("data/processed/products_cleaned.csv",index = False)
+
+
+"""
+
+Sellers dataset
+
+"""
+
+
+print("\nshape:",sellers.shape)
+print("Unique seller IDS",sellers.nunique())
+print("Duplicate seller IDs",sellers["seller_id"].duplicated().sum())
+print(
+    "Sellers IDs in order items missing from sellers",
+    (~order_items["seller_id"].isin(sellers["seller_id"])).sum()
+)
+
+sellers.to_csv("data/processed/sellers_cleaned.csv",index = False)
