@@ -395,3 +395,93 @@ print(
 )
 
 payments.to_csv("data/processed/payments_cleaned.csv",index= False)
+
+
+"""
+
+Reviews dataset 
+
+"""
+
+#handling duplicate review IDs
+print(
+    "\nDuplicate review_id rows:",
+    reviews["review_id"].duplicated().sum()
+)
+
+print(
+    reviews[reviews["review_id"].duplicated(keep = False)]
+    .sort_values("review_id")
+    .head(15)
+)
+
+#checking whether duplicate reviews IDs have multiple orders
+#for each duplicate review-id how many different order_ids does it have ?
+duplicate_reviews = reviews[
+    reviews["review_id"].duplicated(keep = False)
+]
+
+print(
+    duplicate_reviews.groupby("review_id")["order_id"]
+    .nunique()
+    .value_counts()
+)
+
+#validating our primary key 
+print(
+    "duplicate(review_id,order_id) combinations:",
+    reviews.duplicated(
+        subset= ["review_id","order_id"]
+    ).sum()
+)
+
+#handling the missing comments
+print(
+    reviews[["review_comment_title","review_comment_message"]]
+    .isna()
+    .sum()
+)
+
+#how many reviews have both fields missing(comment_title and comment_message)
+print(
+    "Both title and message missing:",
+    reviews[
+        reviews["review_comment_title"].isna() &
+        reviews["review_comment_message"].isna()
+    ].shape[0]
+)
+
+#filling the missing value with no comment 
+reviews["review_comment_title"] = (reviews["review_comment_title"].fillna("No comment"))
+reviews["review_comment_message"] = (reviews["review_comment_message"].fillna("No comment"))
+
+print(reviews.isna().sum())
+print(reviews["review_score"].value_counts().sort_index())
+
+reviews.to_csv("data/processed/reviews_cleaned.csv",index =  False)
+
+
+"""
+
+Geolocation Dataset
+
+"""
+
+print("\nDuplicate rows:", geolocation.duplicated().sum())
+
+print(
+    "Duplicate rows after removing exact duplicates:",
+    geolocation.drop_duplicates().shape
+)
+
+print(
+    "Unique ZIP prefixes:",
+    geolocation["geolocation_zip_code_prefix"].nunique()
+)
+
+#creating the cleaned geolocation after removing exact duplicates
+geolocation = geolocation.drop_duplicates().copy()
+print("Shape:", geolocation.shape)
+print("Duplicate rows:", geolocation.duplicated().sum())
+
+geolocation.to_csv("data/processed/geolocation_cleaned.csv",index=False)
