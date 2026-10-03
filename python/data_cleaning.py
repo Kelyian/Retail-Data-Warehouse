@@ -339,6 +339,19 @@ print(
     (~order_items["product_id"].isin(products["product_id"])).sum()
 )
 
+#converting columns that should contain whole numbers 
+integer_columns = [
+    "product_name_lenght",
+    "product_description_lenght",
+    "product_photos_qty",
+    "product_weight_g"
+]
+
+print("PRODUCT COLUMNS:")
+print(products.columns.tolist())
+for col in integer_columns:
+    products[col] = products[col].astype("Int64") #using Int64 to allow for missing values
+
 products.to_csv("data/processed/products_cleaned.csv",index = False)
 
 
