@@ -4,14 +4,14 @@
 
 This project demonstrates the design and implementation of a modern retail data warehouse using MYSQL and Python.
 
-The goal is to transform raw e-commerce data inot an analytical databse that supports business intelligence.
+The goal is to transform raw e-commerce data into an analytical database that supports business intelligence.
 
 ## Technologies
+
 
 - MYSQL
 - Python
 - Pandas
-- SQL
 - Power BI
 
 ## The project structure:

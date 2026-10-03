@@ -1,6 +1,6 @@
 import pandas as pd
 
-#Loadint the datasets
+#Loading the datasets
 orders = pd.read_csv("data/raw/olist_orders_dataset.csv")
 customers = pd.read_csv("data/raw/olist_customers_dataset.csv")
 order_items = pd.read_csv("data/raw/olist_order_items_dataset.csv")
