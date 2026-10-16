@@ -352,6 +352,23 @@ print(products.columns.tolist())
 for col in integer_columns:
     products[col] = products[col].astype("Int64") #using Int64 to allow for missing values
 
+print(products[[
+    "product_name_lenght",
+    "product_description_lenght",
+    "product_photos_qty",
+    "product_weight_g"
+]].dtypes)
+
+
+# Rename columns to match the MySQL table
+products = products.rename(columns={
+    "product_name_lenght": "product_name_length",
+    "product_description_lenght": "product_description_length"
+})
+
+# Save cleaned products
+products.to_csv("data/processed/products_cleaned.csv", index=False)
+
 products.to_csv("data/processed/products_cleaned.csv",index = False)
 
 
@@ -465,13 +482,25 @@ print(
 )
 
 #filling the missing value with no comment 
-reviews["review_comment_title"] = (reviews["review_comment_title"].fillna("No comment"))
-reviews["review_comment_message"] = (reviews["review_comment_message"].fillna("No comment"))
+reviews["review_comment_title"] = (
+    reviews["review_comment_title"]
+    .str.replace("\r", " ", regex=False)
+    .str.replace("\n", " ", regex=False)
+)
 
-print(reviews.isna().sum())
-print(reviews["review_score"].value_counts().sort_index())
+reviews["review_comment_message"] = (
+    reviews["review_comment_message"]
+    .str.replace("\r", " ", regex=False)
+    .str.replace("\n", " ", regex=False)
+)
 
-reviews.to_csv("data/processed/reviews_cleaned.csv",index =  False)
+reviews.to_csv(
+    "data/processed/reviews_mysql.tsv",
+    sep="\t",
+    index=False
+)
+
+print("MySQL file created:",len(reviews))
 
 
 """
