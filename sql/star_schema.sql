@@ -219,8 +219,8 @@ add column date_key int;
 
 update fact_sales 
 set date_key = 
-	year(order_date) = 10000
-    + month(order_date) = 100
+	year(order_date) * 10000
+    + month(order_date) * 100
     + day(order_date);
 
 -- verifying the results
